@@ -1,0 +1,61 @@
+# - name: Add the Project Atomic PPA
+#   become: yes
+#   apt_repository:
+#     repo: 'ppa:projectatomic/ppa'
+#     state: present
+#   tags: [add_repo]
+
+# - name: Update apt cache
+#   become: yes
+#   apt:
+#     update_cache: yes
+#   tags: [apt_update]
+
+# - name: Install Podman
+#   become: yes
+#   apt:
+#     name: podman
+#     state: present
+#   tags: [install_podman]
+
+# - name: Start Nginx container
+#   become: yes
+#   command: podman run -d --name nginx-container-10 -p 8084:80 docker.io/nginx
+
+
+# ---
+- name: Install EPEL repository
+  become: yes
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Install Podman package
+  become: yes
+  dnf:
+    name: podman
+    state: present
+
+- name: Start Podman service
+  become: yes
+  service:
+    name: podman
+    state: started
+    enabled: yes
+
+- name: Check Podman version
+  become: yes
+  command: podman --version
+  register: podman_version
+
+- name: Display Podman version
+  become: yes
+  debug:
+    var: podman_version.stdout
+
+- name: Start flask application
+  become: yes
+  command: podman run -d --name flask-app -p 8086:3000 docker.io/gouda99/my-repo:flask
+
+
+

@@ -1,0 +1,42 @@
+---
+- name: Copy the bash script
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/remove_containers.sh"
+    dest: /tmp/remove_containers.sh
+    mode: '0755'  # Sets the execute permissions
+
+- name: Make the bash script executable
+  ansible.builtin.command: chmod +x /tmp/remove_containers.sh
+
+- name: Run the bash script
+  ansible.builtin.command: /tmp/remove_containers.sh
+
+
+
+- name: Stop Podman service
+  become: yes
+  systemd:
+    name: podman
+    state: stopped
+
+- name: Disable Podman service
+  become: yes
+  systemd:
+    name: podman
+    enabled: no
+
+- name: Remove Podman package
+  become: yes
+  dnf:
+    name: podman
+    state: absent
+
+- name: Run dnf autoremove
+  become: yes
+  shell: dnf autoremove -y
+
+- name: Remove /etc/containers directory
+  become: yes
+  file:
+    path: /etc/containers
+    state: absent

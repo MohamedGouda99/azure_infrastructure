@@ -1,0 +1,6 @@
+- name: delete Podman and delete containers
+  hosts: all
+  gather_facts: yes  # Replace with the name of your EC2 host or group
+  remote_user: tfadmin  
+  roles:
+    - delete_podman
